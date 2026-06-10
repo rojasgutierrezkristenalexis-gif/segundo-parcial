@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostulanteController;
 use App\Http\Controllers\PagoController;
+use App\Http\Controllers\RolController;
+use App\Http\Controllers\PrivilegioController;
 
 Route::middleware([\Illuminate\Http\Middleware\HandleCors::class])->group(function () {
     
@@ -15,5 +17,16 @@ Route::middleware([\Illuminate\Http\Middleware\HandleCors::class])->group(functi
     Route::delete('/postulantes/{id}', [PostulanteController::class, 'destroy']); // CU13: Eliminar
 
     Route::post('/pagos', [PagoController::class, 'store']);                  // CU10: Pago
+
+    // ==========================================
+    // RUTAS ROLES Y PRIVILEGIOS (CU05 & CU06)
+    // ==========================================
+    Route::get('/roles', [RolController::class, 'index']);
+    Route::post('/roles', [RolController::class, 'store']);
+    Route::put('/roles/{id}', [RolController::class, 'update']);
+    Route::delete('/roles/{id}', [RolController::class, 'destroy']);
+
+    Route::get('/privilegios/{rol_id}', [PrivilegioController::class, 'getPrivilegiosByRol']);
+    Route::post('/privilegios', [PrivilegioController::class, 'updatePrivilegios']);
     
 });

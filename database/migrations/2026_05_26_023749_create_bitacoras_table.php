@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('bitacoras', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('usuario_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->string('ip', 45);
+            $table->string('accion', 100);
             $table->timestamps();
         });
     }
