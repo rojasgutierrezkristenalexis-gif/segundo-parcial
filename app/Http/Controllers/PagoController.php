@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pago;
+use App\Models\Bitacora;
+use App\Models\Postulante;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -34,7 +36,17 @@ class PagoController extends Controller
             'estado'          => 'confirmado' 
         ]);
 
-        // 3. Respuesta exitosa pactada
+        // Obtener datos del postulante para el log
+        $postulante = Postulante::find($request->postulante_id);
+        $detalle = 'Monto: ' . $pago->monto . ' Bs., Transacción: ' . $pago->nro_transaccion;
+        if ($postulante) {
+            $detalle .= ', Postulante: ' . $postulante->nombre . ' ' . $postulante->apellido . ' (CI: ' . $postulante->ci . ')';
+        }
+
+        // Registrar en Bitácora
+        Bitacora::registrar('Registro de pago', $detalle);
+
+        // 3. Respuesta exitosa
         return response()->json([
             'success' => true,
             'data'    => $pago,

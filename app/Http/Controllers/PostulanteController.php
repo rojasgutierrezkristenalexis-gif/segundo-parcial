@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Postulante;
+use App\Models\Bitacora;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -35,6 +36,12 @@ class PostulanteController extends Controller
             'carrera_id' => $request->carrera_id,
             'estado'     => 'pendiente' // Estado inicial pactado
         ]);
+
+        // Registrar en Bitácora
+        Bitacora::registrar(
+            'Registro de postulante', 
+            'CI: ' . $postulante->ci . ', Nombre: ' . $postulante->nombre . ' ' . $postulante->apellido
+        );
 
         return response()->json([
             'success' => true,
@@ -76,7 +83,6 @@ class PostulanteController extends Controller
             ], 404);
         }
 
-        // Validar ignorando el CI del postulante actual para que deje guardar
         $validador = Validator::make($request->all(), [
             'ci'         => 'required|string|max:15|unique:postulantes,ci,' . $id,
             'nombre'     => 'required|string|max:50',
@@ -95,6 +101,12 @@ class PostulanteController extends Controller
         }
 
         $postulante->update($request->all());
+
+        // Registrar en Bitácora
+        Bitacora::registrar(
+            'Modificación de postulante', 
+            'ID: ' . $postulante->id . ', CI: ' . $postulante->ci . ', Nuevo Estado: ' . $postulante->estado
+        );
 
         return response()->json([
             'success' => true,
@@ -116,7 +128,16 @@ class PostulanteController extends Controller
             ], 404);
         }
 
+        $ci = $postulante->ci;
+        $nombre = $postulante->nombre . ' ' . $postulante->apellido;
+        
         $postulante->delete();
+
+        // Registrar en Bitácora
+        Bitacora::registrar(
+            'Eliminación de postulante', 
+            'CI: ' . $ci . ', Nombre: ' . $nombre
+        );
 
         return response()->json([
             'success' => true,

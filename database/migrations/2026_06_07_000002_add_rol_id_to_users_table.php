@@ -11,12 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('bitacoras', function (Blueprint $table) {
-            $table->id();
-            $table->string('usuario');
-            $table->string('accion');
-            $table->text('detalle')->nullable();
-            $table->timestamps();
+        Schema::table('users', function (Blueprint $table) {
+            $table->foreignId('rol_id')->nullable()->constrained('rols')->nullOnDelete();
         });
     }
 
@@ -25,6 +21,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('bitacoras');
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropForeign(['rol_id']);
+            $table->dropColumn('rol_id');
+        });
     }
 };
